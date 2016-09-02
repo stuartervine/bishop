@@ -1,0 +1,8 @@
+{
+  "bishop": {
+    "files": {
+      "ls": "ls",
+      "listDetails": "ls -al"
+    }
+  }
+}
