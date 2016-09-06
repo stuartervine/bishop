@@ -58,7 +58,7 @@ function _complete() {
         COMPREPLY=( $(compgen -W "${commands}" -- ${currentWord}) )
     else
         tput sc
-        blue
+        yellow
         echo -ne "   <- $(resolveCommand $selector)"
         clear
         tput rc
