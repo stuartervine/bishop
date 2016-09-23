@@ -76,7 +76,6 @@ function _tabPressedTwiceOnCompletedCommand() {
 }
 
 function _processCompletion() {
-    echo "Here"
     suggestWordsFn=$1
     commandCompletedFn=$2
     tabPressedTwiceOnCompletionFn=$3
@@ -85,7 +84,6 @@ function _processCompletion() {
     selector=$(_jsonSelector)
     commandJson=$(_matchingCommandJson $selector)
     jsonObjectType=$(echo $commandJson | jq "type")
-    echo $commandJson
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
         commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
