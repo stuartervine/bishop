@@ -10,6 +10,3 @@ BISHOP_COMMANDS_FILE=`pwd`/example_commands.json
   output=$(_matchingCommandJson $jsonSelector)
   [ "$output" == "{ \"ls\": \"ls\", \"listDetails\": \"ls -al\" }" ]
 }
-
-
-echo ${output}
