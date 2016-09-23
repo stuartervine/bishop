@@ -55,31 +55,53 @@ function _matchingCommandJson() {
     echo $(cat $BISHOP_COMMANDS_FILE | jq $selector)
 }
 
-function _complete() {
+function _wordsSuggested() {
+    COMPREPLY=($1)
+}
+
+function _commandCompleted() {
+    selector=$1
+    currentCommand=$(resolveCommand $selector)
+    tput sc
+    yellow
+    echo -ne "   <- $currentCommand"
+    clear
+    tput rc
+}
+
+function _tabPressedTwiceOnCompletedCommand() {
+    currentCommand=$1
+    ps1=$(PS1="$PS1" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
+    echo; read -e -p "$ps1$currentCommand" opt; eval "$cmd$opt"
+}
+
+function _processCompletion() {
+    echo "Here"
+    suggestWordsFn=$1
+    commandCompletedFn=$2
+    tabPressedTwiceOnCompletionFn=$3
     COMPREPLY=()
     currentWord="${COMP_WORDS[COMP_CWORD]}"
     selector=$(_jsonSelector)
     commandJson=$(_matchingCommandJson $selector)
     jsonObjectType=$(echo $commandJson | jq "type")
+    echo $commandJson
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
         commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
-        COMPREPLY=( $(compgen -W "${commands}" -- ${currentWord}) )
+        $suggestWordsFn $(compgen -W "${commands}" -- ${currentWord})
     else
-        currentCommand=$(resolveCommand $selector)
-        tput sc
-        yellow
-        echo -ne "   <- $currentCommand"
-        clear
-        tput rc
-        if [ $CURRENT_TAB_COUNT -eq 2 ]; then
-            ps1=$(PS1="$PS1" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
-            echo "\n"; read -e -p "$ps1$currentCommand" opt; eval "$cmd$opt"
+        $commandCompletedFn $selector
+        if [ $CURRENT_TAB_COUNT -eq 3 ]; then
+            $tabPressedTwiceOnCompletionFn "$currentCommand"
             return 0
-        else
-            ((CURRENT_TAB_COUNT+=1))
         fi
+        ((CURRENT_TAB_COUNT+=1))
     fi
+}
+
+function _complete() {
+    _processCompletion _wordsSuggested _commandCompleted _tabPressedTwiceOnCompletedCommand
 }
 
 if [ -z $BISHOP_COMMANDS_FILE ]; then
@@ -98,4 +120,3 @@ fi
 complete -F _complete "bishop"
 
 installedDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
