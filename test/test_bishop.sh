@@ -34,7 +34,8 @@ COMP_CWORD=1
   COMP_WORDS=("bishop" "files" "")
   COMP_CWORD=1
   _processCompletion stubSuggestedWords noOp noOp
-  [ "$actualSuggestedWords" == "listDetails ls " ]
+  echo $actualSuggestedWords
+  [ "$actualSuggestedWords" == "listDetails ls" ]
   [ "$actualCurrentCommand" == "files" ]
 }
 
@@ -64,6 +65,7 @@ COMP_CWORD=1
 }
 
 @test "inserts variables into commands" {
+    skip
   COMP_WORDS=("bishop" "prod" "ssh" "")
   COMP_CWORD=1
   _processCompletion noOp stubCommandCompletion noOp
@@ -91,6 +93,18 @@ COMP_CWORD=1
 @test "_resolveCommand returns null when no match to given selector" {
    command=$(_resolveCommand ".[].files.bobbins")
    [ "$command" == null ]
+}
+
+@test "_parseJsonCommands returns non variable commands" {
+   commands=$(_parseJsonCommands "{\"ls\": \"ls\", \"\$variable\":\"value\"}")
+   echo $commands
+   [ "$commands" == "ls" ]
+}
+
+@test "_parseJsonVariables returns variable commands" {
+   variables=$(_parseJsonVariables "{\"ls\": \"ls\", \"\$variable\":\"value\"}")
+   echo $variables
+   [ "$variables" == "\$variable" ]
 }
 
 #@test "_commandCompleted outputs command in yellow" {
