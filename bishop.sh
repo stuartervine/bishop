@@ -35,7 +35,7 @@ function bishop() {
     eval $command
 }
 
-function resolveCommand() {
+function _resolveCommand() {
     command=$(cat $BISHOP_COMMANDS_FILE | jq $1)
     command="${command%\"}"
     command="${command#\"}"
@@ -56,13 +56,14 @@ function _matchingCommandJson() {
 }
 
 function _wordsSuggested() {
-    COMPREPLY=($1)
+    commands=$1
+    currentWord=$2
+    COMPREPLY=($(compgen -W "${commands}" -- ${currentWord}))
 }
 
 function _commandCompleted() {
-    selector=$1
-    currentCommand=$(resolveCommand $selector)
     tput sc
+    currentCommand=$1
     yellow
     echo -ne "   <- $currentCommand"
     clear
@@ -72,7 +73,7 @@ function _commandCompleted() {
 function _tabPressedTwiceOnCompletedCommand() {
     currentCommand=$1
     ps1=$(PS1="$PS1" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
-    echo; read -e -p "$ps1$currentCommand" opt; eval "$cmd$opt"
+    echo; read -e -p "$ps1$currentCommand" opt; eval "$currentCommand$opt"
 }
 
 function _processCompletion() {
@@ -87,10 +88,11 @@ function _processCompletion() {
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
         commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
-        $suggestWordsFn $(compgen -W "${commands}" -- ${currentWord})
+        $suggestWordsFn "$commands" $currentWord
     else
-        $commandCompletedFn $selector
-        if [ $CURRENT_TAB_COUNT -eq 3 ]; then
+        currentCommand=$(_resolveCommand $selector)
+        $commandCompletedFn "$currentCommand"
+        if [ $CURRENT_TAB_COUNT -eq 2 ]; then
             $tabPressedTwiceOnCompletionFn "$currentCommand"
             return 0
         fi
