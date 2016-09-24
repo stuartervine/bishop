@@ -12,6 +12,10 @@ function stubCommandCompletion() {
     actualCurrentCommand=$1
 }
 
+function stubTabPressedTwice() {
+    tabbedPressedTwiceWithCurrentCommand=$1
+}
+
 function noOp() {
     return 0
 }
@@ -39,8 +43,25 @@ COMP_CWORD=1
   COMP_WORDS=("bishop" "files" "listDetails" "")
   COMP_CWORD=1
   _processCompletion noOp stubCommandCompletion noOp
-   echo $actualCurrentCommand
   [ "$actualCurrentCommand" == "ls -al" ]
+}
+
+@test "increments tab count when processing completion" {
+  COMP_WORDS=("bishop" "files" "listDetails" "")
+  COMP_CWORD=1
+  CURRENT_TAB_COUNT=0
+  _processCompletion noOp stubCommandCompletion noOp
+  [ $CURRENT_TAB_COUNT -eq 1 ]
+  _processCompletion noOp stubCommandCompletion noOp
+  [ $CURRENT_TAB_COUNT -eq 2 ]
+}
+
+@test "invokes tab pressed twice function when tab has been pressed twice" {
+  COMP_WORDS=("bishop" "files" "listDetails" "")
+  COMP_CWORD=1
+  CURRENT_TAB_COUNT=2
+  _processCompletion noOp stubCommandCompletion stubTabPressedTwice
+  [ "$tabbedPressedTwiceWithCurrentCommand" == "ls -al" ]
 }
 
 # unit

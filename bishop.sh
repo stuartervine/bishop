@@ -26,25 +26,25 @@ function clear() {
 }
 
 function bishop() {
-    currentDir=$(pwd)
-    selector=".[]"
+    local currentDir=$(pwd)
+    local selector=".[]"
     for word in $@; do selector="$selector.$word"; done
-    command=$(cat $BISHOP_COMMANDS_FILE | jq $selector)
-    command="${command%\"}"
-    command="${command#\"}"
+    local command=$(cat $BISHOP_COMMANDS_FILE | jq $selector)
+    local command="${command%\"}"
+    local command="${command#\"}"
     eval $command
 }
 
 function _resolveCommand() {
-    command=$(cat $BISHOP_COMMANDS_FILE | jq $1)
-    command="${command%\"}"
-    command="${command#\"}"
+    local command=$(cat $BISHOP_COMMANDS_FILE | jq $1)
+    local command="${command%\"}"
+    local command="${command#\"}"
     echo $command
 }
 
 function _jsonSelector() {
     local selector=".[]"
-    completedWords=("${COMP_WORDS[@]:1}")
+    local completedWords=("${COMP_WORDS[@]:1}")
     unset completedWords[${#completedWords[@]}-1]
     for word in ${completedWords[@]}; do selector="$selector.$word"; done
     echo $selector
@@ -56,14 +56,14 @@ function _matchingCommandJson() {
 }
 
 function _wordsSuggested() {
-    commands=$1
-    currentWord=$2
+    local commands=$1
+    local currentWord=$2
     COMPREPLY=($(compgen -W "${commands}" -- ${currentWord}))
 }
 
 function _commandCompleted() {
+    local currentCommand=$1
     tput sc
-    currentCommand=$1
     yellow
     echo -ne "   <- $currentCommand"
     clear
@@ -71,26 +71,28 @@ function _commandCompleted() {
 }
 
 function _tabPressedTwiceOnCompletedCommand() {
-    currentCommand=$1
-    ps1=$(PS1="$PS1" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
+    local currentCommand=$1
+    local ps1=$(PS1="$PS1" "$BASH" --norc -i </dev/null 2>&1 | sed -n '${s/^\(.*\)exit$/\1/p;}')
     echo; read -e -p "$ps1$currentCommand" opt; eval "$currentCommand$opt"
 }
 
 function _processCompletion() {
-    suggestWordsFn=$1
-    commandCompletedFn=$2
-    tabPressedTwiceOnCompletionFn=$3
     COMPREPLY=()
-    currentWord="${COMP_WORDS[COMP_CWORD]}"
-    selector=$(_jsonSelector)
-    commandJson=$(_matchingCommandJson $selector)
-    jsonObjectType=$(echo $commandJson | jq "type")
+
+    local suggestWordsFn=$1
+    local commandCompletedFn=$2
+    local tabPressedTwiceOnCompletionFn=$3
+
+    local currentWord="${COMP_WORDS[COMP_CWORD]}"
+    local selector=$(_jsonSelector)
+    local commandJson=$(_matchingCommandJson $selector)
+    local jsonObjectType=$(echo $commandJson | jq "type")
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
-        commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
+        local commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
         $suggestWordsFn "$commands" $currentWord
     else
-        currentCommand=$(_resolveCommand $selector)
+        local currentCommand=$(_resolveCommand $selector)
         $commandCompletedFn "$currentCommand"
         if [ $CURRENT_TAB_COUNT -eq 2 ]; then
             $tabPressedTwiceOnCompletionFn "$currentCommand"
@@ -119,4 +121,4 @@ fi
 
 complete -F _complete "bishop"
 
-installedDirectory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BISHOP_INSTALLED_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
