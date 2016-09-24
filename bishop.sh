@@ -42,6 +42,11 @@ function _resolveCommand() {
     echo $command
 }
 
+function _parseJsonCommands() {
+    commandJson=$1
+    echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " "
+}
+
 function _jsonSelector() {
     local selector=".[]"
     local completedWords=("${COMP_WORDS[@]:1}")
@@ -89,7 +94,8 @@ function _processCompletion() {
     local jsonObjectType=$(echo $commandJson | jq "type")
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
-        local commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
+#        local commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
+        local commands=$(_parseJsonCommands "$commandJson")
         $suggestWordsFn "$commands" $currentWord
     else
         local currentCommand=$(_resolveCommand $selector)

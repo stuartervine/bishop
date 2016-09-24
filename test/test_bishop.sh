@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-BISHOP_COMMANDS_FILE=`pwd`/example_commands.json
+BISHOP_COMMANDS_FILE=`pwd`/test/test_commands.json
 . bishop.sh
 
 function stubSuggestedWords() {
@@ -22,7 +22,6 @@ function noOp() {
 
 COMP_WORDS=("bishop" "files" "")
 COMP_CWORD=1
-#  jsonSelector=$(_jsonSelector)
 
 # end to end
 @test "bishop executes command" {
@@ -62,6 +61,13 @@ COMP_CWORD=1
   CURRENT_TAB_COUNT=2
   _processCompletion noOp stubCommandCompletion stubTabPressedTwice
   [ "$tabbedPressedTwiceWithCurrentCommand" == "ls -al" ]
+}
+
+@test "inserts variables into commands" {
+  COMP_WORDS=("bishop" "prod" "ssh" "")
+  COMP_CWORD=1
+  _processCompletion noOp stubCommandCompletion noOp
+  [ "$actualCurrentCommand" == "ssh theUser@theServer" ]
 }
 
 # unit

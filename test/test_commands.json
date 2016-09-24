@@ -1,0 +1,13 @@
+{
+  "bishop": {
+    "files": {
+      "ls": "ls",
+      "listDetails": "ls -al"
+    },
+    "prod": {
+      "$user": "theUser",
+      "$server": "theServer",
+      "ssh": "ssh ${user}@${server}"
+    }
+  }
+}
