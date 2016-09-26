@@ -65,11 +65,18 @@ COMP_CWORD=1
 }
 
 @test "inserts variables into commands" {
-    skip
-  COMP_WORDS=("bishop" "prod" "ssh" "")
+  COMP_WORDS=("bishop" "prod" "secure" "shell" "")
   COMP_CWORD=1
   _processCompletion noOp stubCommandCompletion noOp
-  [ "$actualCurrentCommand" == "ssh theUser@theServer" ]
+  echo $actualCurrentCommand
+  [ "$actualCurrentCommand" == "ssh -i file.id_rsa theUser@theServer" ]
+}
+
+@test "_walkJsonAndCreateVariables creates variables for all levels of the json tree" {
+  COMP_WORDS=("bishop" "prod" "secure" "copy" "")
+  COMP_CWORD=1
+  CURRENT_TAB_COUNT=0
+  _walkJsonAndCreateVariables
 }
 
 # unit
@@ -82,6 +89,7 @@ COMP_CWORD=1
 
 @test "_resolveCommand retrieves json object at selector position in commands file" {
    command=$(_resolveCommand ".[].files")
+   echo $command
    [ "$command" == "{ \"ls\": \"ls\", \"listDetails\": \"ls -al\" }" ]
 }
 
@@ -102,9 +110,9 @@ COMP_CWORD=1
 }
 
 @test "_parseJsonVariables returns variable commands" {
-   variables=$(_parseJsonVariables "{\"ls\": \"ls\", \"\$variable\":\"value\"}")
+   variables=$(_parseJsonVariables "{\"ls\": \"ls\", \"_variable\":\"value\"}")
    echo $variables
-   [ "$variables" == "\$variable" ]
+   [ "$variables" == "_variable" ]
 }
 
 #@test "_commandCompleted outputs command in yellow" {

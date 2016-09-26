@@ -5,9 +5,13 @@
       "listDetails": "ls -al"
     },
     "prod": {
-      "$user": "theUser",
-      "$server": "theServer",
-      "ssh": "ssh ${user}@${server}"
+      "_user": "theUser",
+      "_server": "theServer",
+      "secure": {
+        "_identity":"file.id_rsa",
+        "copy":"scp -i $identity $user@$server",
+        "shell":"ssh -i $identity $user@$server"
+      }
     }
   }
 }

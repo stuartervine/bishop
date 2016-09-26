@@ -55,7 +55,7 @@ function _parseJsonVariables() {
     local index=0
     for commandOrVariable in ${commandsAndVariables[@]};
     do
-        if [[ $commandOrVariable == \$* ]]; then
+        if [[ $commandOrVariable == _* ]]; then
             variablesOnly[$index]=$commandOrVariable
             index=$((index+1))
         fi
@@ -70,10 +70,15 @@ function _walkJsonAndCreateVariables() {
     for word in ${completedWords[@]};
     do
         commandJson=$(_matchingCommandJson "$selector")
-        echo $commandJson
+        variables=$(_parseJsonVariables "$commandJson")
+        for variable in ${variables[@]};
+        do
+            variableKey="${variable#"_"}"
+            variableValue=$(_resolveCommand "$selector.$variable")
+            eval "export $variableKey=$variableValue"
+        done
         selector="$selector.$word"
     done
-    echo $selector
 }
 
 function _jsonSelector() {
@@ -112,6 +117,7 @@ function _tabPressedTwiceOnCompletedCommand() {
 
 function _processCompletion() {
     COMPREPLY=()
+    _walkJsonAndCreateVariables
 
     local suggestWordsFn=$1
     local commandCompletedFn=$2
@@ -123,14 +129,14 @@ function _processCompletion() {
     local jsonObjectType=$(echo $commandJson | jq "type")
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
-#        local commands=$(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " ")
         local commands=$(_parseJsonCommands "$commandJson")
         $suggestWordsFn "${commands[@]}" $currentWord
     else
         local currentCommand=$(_resolveCommand $selector)
-        $commandCompletedFn "$currentCommand"
+        local commandWithVariables=$(eval "echo $currentCommand")
+        $commandCompletedFn "$commandWithVariables"
         if [ $CURRENT_TAB_COUNT -eq 2 ]; then
-            $tabPressedTwiceOnCompletionFn "$currentCommand"
+            $tabPressedTwiceOnCompletionFn "$commandWithVariables"
             return 0
         fi
         ((CURRENT_TAB_COUNT+=1))
