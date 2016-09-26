@@ -104,9 +104,9 @@ COMP_CWORD=1
 }
 
 @test "_parseJsonCommands returns non variable commands" {
-   commands=$(_parseJsonCommands "{\"ls\": \"ls\", \"\$variable\":\"value\"}")
+   commands=$(_parseJsonCommands "{\"ls\": \"ls\", \"_variable\":\"value\"}")
    echo $commands
-   [ "$commands" == "ls" ]
+   [ "${commands[@]}" == "ls" ]
 }
 
 @test "_parseJsonVariables returns variable commands" {
@@ -117,7 +117,7 @@ COMP_CWORD=1
 
 #@test "_commandCompleted outputs command in yellow" {
 #    output=$(_commandCompleted "ls -al")
-#    expected=$(tput sc; echo -e "\033[0;33m   <- ls -al\033[0m"; tput rc)
+#    expected=$(echo -e "\033[0;33m   <- ls -al\033[0m")
 #    echo $output
 #    echo $expected
 #    [ "$output" == "$expected" ]

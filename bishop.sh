@@ -45,7 +45,7 @@ function _resolveCommand() {
 function _parseJsonCommands() {
     commandJson=$1
     commandsAndVariables=($(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " "))
-    commandsOnly=${commandsAndVariables[@]/\$*} #remove any variables
+    commandsOnly=${commandsAndVariables[@]/_*} #remove any variables
     echo "${commandsOnly[@]}"
 }
 
