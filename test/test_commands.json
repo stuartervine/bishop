@@ -12,6 +12,12 @@
         "copy":"scp -i $identity $user@$server",
         "shell":"ssh -i $identity $user@$server"
       }
+    },
+    "underscore_test": {
+      "someCommands": "echo 'hello'"
+    },
+    "minus-test": {
+      "someCommands": "echo 'hello'"
     }
   }
 }

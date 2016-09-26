@@ -35,6 +35,34 @@ function bishop() {
     eval $command
 }
 
+function _filterArray() {
+    local filterValue=$1
+    local arr=${@:2}
+    local index=0
+    for item in ${arr[@]};
+    do
+        if [[ $item == $filterValue ]]; then
+            output[$index]=$item
+            index=$((index+1))
+        fi
+    done
+    echo "${output[@]}"
+}
+
+function _filterNotArray() {
+    local filterValue=$1
+    local arr=${@:2}
+    local index=0
+    for item in ${arr[@]};
+    do
+        if [[ $item != $filterValue ]]; then
+            output[$index]=$item
+            index=$((index+1))
+        fi
+    done
+    echo "${output[@]}"
+}
+
 function _resolveCommand() {
     local command=$(cat $BISHOP_COMMANDS_FILE | jq $1)
     local command="${command%\"}"
@@ -45,22 +73,22 @@ function _resolveCommand() {
 function _parseJsonCommands() {
     commandJson=$1
     commandsAndVariables=($(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " "))
-    commandsOnly=${commandsAndVariables[@]/_*} #remove any variables
-    echo "${commandsOnly[@]}"
+    echo $(_filterNotArray "_*" ${commandsAndVariables[@]})
 }
 
 function _parseJsonVariables() {
-    commandJson=$1
-    commandsAndVariables=($(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " "))
-    local index=0
-    for commandOrVariable in ${commandsAndVariables[@]};
-    do
-        if [[ $commandOrVariable == _* ]]; then
-            variablesOnly[$index]=$commandOrVariable
-            index=$((index+1))
-        fi
-    done
-    echo "${variablesOnly[@]}"
+    local commandJson=$1
+    local commandsAndVariables=($(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " "))
+    echo $(_filterArray "_*" ${commandsAndVariables[@]})
+#    local index=0
+#    for commandOrVariable in ${commandsAndVariables[@]};
+#    do
+#        if [[ $commandOrVariable == _* ]]; then
+#            variablesOnly[$index]=$commandOrVariable
+#            index=$((index+1))
+#        fi
+#    done
+#    echo "${variablesOnly[@]}"
 }
 
 function _walkJsonAndCreateVariables() {
@@ -101,7 +129,8 @@ function _wordsSuggested() {
 }
 
 function _commandCompleted() {
-    local currentCommand=$1
+    local currentCommand=$(echo $1 | tr "\n" " ")
+    export lastCommand=$currentCommand
     tput sc
     yellow
     echo -ne "   <- $currentCommand"
@@ -133,7 +162,7 @@ function _processCompletion() {
         $suggestWordsFn "${commands[@]}" $currentWord
     else
         local currentCommand=$(_resolveCommand $selector)
-        local commandWithVariables=$(eval "echo $currentCommand")
+        local commandWithVariables=$(eval "echo \"$currentCommand\"")
         $commandCompletedFn "$commandWithVariables"
         if [ $CURRENT_TAB_COUNT -eq 2 ]; then
             $tabPressedTwiceOnCompletionFn "$commandWithVariables"

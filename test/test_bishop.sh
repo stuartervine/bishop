@@ -109,8 +109,20 @@ COMP_CWORD=1
    [ "${commands[@]}" == "ls" ]
 }
 
+@test "_parseJsonCommands deals with underscores in command label" {
+   commands=$(_parseJsonCommands "{\"ls_all\": \"ls -al\"}")
+   echo $commands
+   [ "${commands[@]}" == "ls_all" ]
+}
+
 @test "_parseJsonVariables returns variable commands" {
    variables=$(_parseJsonVariables "{\"ls\": \"ls\", \"_variable\":\"value\"}")
+   echo $variables
+   [ "$variables" == "_variable" ]
+}
+
+@test "_parseJsonVariables ignores commands with embedded underscores" {
+   variables=$(_parseJsonVariables "{\"ls_all\": \"ls\", \"_variable\":\"value\"}")
    echo $variables
    [ "$variables" == "_variable" ]
 }
