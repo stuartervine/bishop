@@ -84,7 +84,14 @@ COMP_CWORD=1
   COMP_WORDS=("bishop" "files" "")
   COMP_CWORD=1
   selector=$(_jsonSelector)
-  [ "$selector" == ".[].files" ]
+  [ "$selector" == ".[].\"files\"" ]
+}
+
+@test "_jsonSelector copes with dashes" {
+  COMP_WORDS=("bishop" "minus-test" "")
+  COMP_CWORD=1
+  selector=$(_jsonSelector)
+  [ "$selector" == ".[].\"minus-test\"" ]
 }
 
 @test "_resolveCommand retrieves json object at selector position in commands file" {
@@ -101,6 +108,11 @@ COMP_CWORD=1
 @test "_resolveCommand returns null when no match to given selector" {
    command=$(_resolveCommand ".[].files.bobbins")
    [ "$command" == null ]
+}
+
+@test "_resolveCommand deals with dashes in command label" {
+   command=$(_resolveCommand ".[].\"minus-test\"")
+   [ "$command" == "ls -al" ]
 }
 
 @test "_parseJsonCommands returns non variable commands" {

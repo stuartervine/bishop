@@ -80,15 +80,6 @@ function _parseJsonVariables() {
     local commandJson=$1
     local commandsAndVariables=($(echo $commandJson | jq "keys | .[]" | tr -d "\"" | tr "\n" " "))
     echo $(_filterArray "_*" ${commandsAndVariables[@]})
-#    local index=0
-#    for commandOrVariable in ${commandsAndVariables[@]};
-#    do
-#        if [[ $commandOrVariable == _* ]]; then
-#            variablesOnly[$index]=$commandOrVariable
-#            index=$((index+1))
-#        fi
-#    done
-#    echo "${variablesOnly[@]}"
 }
 
 function _walkJsonAndCreateVariables() {
@@ -113,7 +104,7 @@ function _jsonSelector() {
     local selector=".[]"
     local completedWords=("${COMP_WORDS[@]:1}")
     unset completedWords[${#completedWords[@]}-1]
-    for word in ${completedWords[@]}; do selector="$selector.$word"; done
+    for word in ${completedWords[@]}; do selector="$selector.\"$word\""; done
     echo $selector
 }
 
@@ -162,7 +153,7 @@ function _processCompletion() {
         $suggestWordsFn "${commands[@]}" $currentWord
     else
         local currentCommand=$(_resolveCommand $selector)
-        local commandWithVariables=$(eval "echo \"$currentCommand\"")
+        local commandWithVariables=$(eval "echo -ne \"$currentCommand\"")
         $commandCompletedFn "$commandWithVariables"
         if [ $CURRENT_TAB_COUNT -eq 2 ]; then
             $tabPressedTwiceOnCompletionFn "$commandWithVariables"

@@ -16,8 +16,6 @@
     "underscore_test": {
       "someCommands": "echo 'hello'"
     },
-    "minus-test": {
-      "someCommands": "echo 'hello'"
-    }
+    "minus-test": "ls -al"
   }
 }
