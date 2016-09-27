@@ -1,0 +1,5 @@
+language: c
+script: test/test_bishop.sh --tap test
+notifications:
+  email:
+    on_success: never
