@@ -1,4 +1,4 @@
-#!/usr/bin/env bats
+#!../deps/bats
 
 BISHOP_COMMANDS_FILE=`pwd`/test/test_commands.json
 . bishop.sh
