@@ -153,7 +153,7 @@ function _processCompletion() {
         $suggestWordsFn "${commands[@]}" $currentWord
     else
         local currentCommand=$(_resolveCommand $selector)
-        local commandWithVariables=$(eval "echo -ne \"$currentCommand\"")
+        local commandWithVariables=$(eval "echo \"$currentCommand\"")
         $commandCompletedFn "$commandWithVariables"
         if [ $CURRENT_TAB_COUNT -eq 2 ]; then
             $tabPressedTwiceOnCompletionFn "$commandWithVariables"
