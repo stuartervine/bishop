@@ -9,3 +9,5 @@ export BISHOP_COMMANDS_FILE=`pwd`/example_commands.json
 . bishop.sh
 bishop <TAB>
 ~~~
+
+Test build
