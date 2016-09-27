@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/stuartervine/bishop.svg?branch=master)](https://travis-ci.org/stuartervine/bishop)
+
 # bishop
 Bash utility to help build auto completing trees of commands.
 
