@@ -5,6 +5,10 @@ blue='\033[0;34m'
 yellow='\033[0;33m'
 no_colour='\033[0m'
 
+function _currentRunningDirectory() {
+    echo "$( dirname "${BASH_SOURCE[0]}" )"
+}
+
 function yellow() {
     echo -ne "${yellow}"
 }
@@ -26,13 +30,26 @@ function clear() {
 }
 
 function bishop() {
-    local currentDir=$(pwd)
-    local selector=".[]"
-    for word in $@; do selector="$selector.$word"; done
-    local command=$(cat $BISHOP_COMMANDS_FILE | jq $selector)
-    local command="${command%\"}"
-    local command="${command#\"}"
-    eval $command
+    if [ $1 == "upgrade" ]; then
+        blue
+        echo "Upgrading bishop..."
+        clear
+        currentDir=$(pwd)
+        cd `_currentRunningDirectory`
+        curl https://raw.githubusercontent.com/stuartervine/bishop/master/bishop.sh > bishop.sh
+        red
+        echo "Bishop up to date."
+        clear
+        cd $currentDir
+    else
+        local currentDir=$(pwd)
+        local selector=".[]"
+        for word in $@; do selector="$selector.$word"; done
+        local command=$(cat $BISHOP_COMMANDS_FILE | jq $selector)
+        local command="${command%\"}"
+        local command="${command#\"}"
+        eval $command
+    fi
 }
 
 function _filterArray() {
