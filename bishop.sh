@@ -5,6 +5,10 @@ blue='\033[0;34m'
 yellow='\033[0;33m'
 no_colour='\033[0m'
 
+function _currentRunningDirectory() {
+    echo "$( dirname "${BASH_SOURCE[0]}" )"
+}
+
 function yellow() {
     echo -ne "${yellow}"
 }
@@ -32,7 +36,7 @@ function bishop() {
         clear
         currentDir=$(pwd)
         cd `_currentRunningDirectory`
-        curl -# https://raw.githubusercontent.com/stuartervine/bishop/master/bishop.sh > bishop.sh
+        curl -H 'Cache-Control: no-cache' -# https://raw.githubusercontent.com/stuartervine/bishop/master/bishop.sh > bishop.sh
         source bishop.sh
         red
         echo "Bishop up to date."
