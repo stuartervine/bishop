@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/stuartervine/bishop.svg?branch=master)](https://travis-ci.org/stuartervine/bishop)
 
 # bishop
-Bash utility to help build auto completing trees of commands.
+Bash utility to help build tab auto completing trees of commands.
 
 To use, just checkout, wire up the commands.json and source bishop.
 
@@ -11,6 +11,9 @@ export BISHOP_COMMANDS_FILE=`pwd`/example_commands.json
 . bishop.sh
 bishop <TAB>
 ~~~
+
+Typing bishop, followed by TAB will show a list of available commands.
+Double tabbing will replace the bishop command with the one selected.
 
 # Examples of command json
 
