@@ -12,4 +12,84 @@ export BISHOP_COMMANDS_FILE=`pwd`/example_commands.json
 bishop <TAB>
 ~~~
 
-Test build
+# Examples of command json
+
+The command json file is pretty simple, and just represents a tree of auto completing commands, with the bottom most element holding the actual command that will execute.
+
+**A really simple example:**
+
+~~~
+echo '
+{
+  "bishop": {
+    "ls":"ls -al"
+  }
+}
+' > command.json
+BISHOP_COMMANDS_FILE=./command.json
+bishop <TAB>
+~~~
+
+gives 
+
+~~~
+bishop ls  <-- ls -al
+~~~
+
+**A multi-level example:**
+
+~~~
+echo '
+{
+  "bishop": {
+    "ls": {
+        "al": "ls -al",
+        "lrt": "ls -lrt"
+    }
+  }
+}
+' > command.json
+BISHOP_COMMANDS_FILE=./command.json
+bishop <TAB>
+~~~
+
+gives 
+
+~~~
+bishop ls
+al   lrt
+
+bishop ls a<TAB>
+~~~
+
+then gives
+
+~~~
+bishop ls al  <-- ls -al
+~~~
+
+**Variables:**
+
+You can specify variables to carry down the command hierarchy in the following way:
+
+~~~
+echo '
+{
+  "bishop": {
+    "prod": {
+        "_serverAddress": "prod.server.com",
+        "login": "ssh user@${serverAddress}",
+        "scp": "scp user@${serverAddress}"
+    }
+  }
+}
+' > command.json
+BISHOP_COMMANDS_FILE=./command.json
+bishop login prod<TAB>
+~~~
+
+gives
+
+~~~
+bishop login prod  <-- ssh user@prod.server.com
+~~~
