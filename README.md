@@ -88,11 +88,11 @@ echo '
 }
 ' > command.json
 BISHOP_COMMANDS_FILE=./command.json
-bishop login prod<TAB>
+bishop prod login<TAB>
 ~~~
 
 gives
 
 ~~~
-bishop login prod  <-- ssh user@prod.server.com
+bishop prod login <-- ssh user@prod.server.com
 ~~~
