@@ -1,4 +1,4 @@
-#!../deps/bats
+#!/usr/local/bin/bats
 
 BISHOP_COMMANDS_FILE=`pwd`/test/test_commands.json
 . bishop.sh
@@ -27,6 +27,11 @@ COMP_CWORD=1
 @test "bishop executes command" {
     output=$(bishop files ls)
     echo $output | grep "bishop.sh" #returns a line
+}
+
+@test "executes command passing through any additional parameters" {
+    output=$(bishop files ls *.sh)
+    echo $output | grep "bishop.sh"
 }
 
 # high level

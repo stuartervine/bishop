@@ -45,10 +45,20 @@ function bishop() {
     else
         local currentDir=$(pwd)
         local selector=".[]"
-        for word in $@; do selector="$selector.$word"; done
+        local parameters=""
+        for word in $@;
+        do
+            local commandJson=$(cat $BISHOP_COMMANDS_FILE | jq $selector);
+            local jsonObjectType=$(echo $commandJson | jq "type")
+            if [ $jsonObjectType != "\"string\"" ]; then
+                selector="$selector.$word";
+            else
+                parameters="$parameters $word"
+            fi
+        done
         local command=$(cat $BISHOP_COMMANDS_FILE | jq $selector)
         local command="${command%\"}"
-        local command="${command#\"}"
+        local command="${command#\"} $parameters"
         eval $command
     fi
 }
