@@ -30,7 +30,7 @@ function clear() {
     echo -ne "${no_colour}"
 }
 
-function bishop() {
+function _bishop() {
     if [ $1 == "upgrade" ]; then
         blue
         echo "Upgrading bishop..."
@@ -45,19 +45,15 @@ function bishop() {
         cd $currentDir
     else
         local currentDir=$(pwd)
-        local selector="."
-        local parameters=""
-        for word in $@;
+        local selector=".$BISHOP_ALIAS"
+        for word in $*;
         do
-            local commandJson=$(cat $BISHOP_COMMANDS_FILE | jq "$selector");
-            local jsonObjectType=$(echo $commandJson | jq "type")
-            if [ $jsonObjectType != "\"string\"" ]; then
-                selector="$selector.$word";
-            else
-                parameters="$parameters $word"
-            fi
+            selector="$selector .$word";
         done
-        local command=$(cat $BISHOP_COMMANDS_FILE | jq $selector)
+        local selectorArray=($selector)
+        local currentCommand=$(_resolveCommandUsingArray ${selectorArray[@]})
+        local commandWithVariables=$(eval "echo \"$currentCommand\"")
+        local command=$commandWithVariables
         local command="${command%\"}"
         local command="${command#\"} $parameters"
         eval $command
@@ -201,7 +197,6 @@ function _tabPressedTwiceOnCompletedCommand() {
 function _processCompletion() {
     COMPREPLY=()
     _walkJsonAndCreateVariables
-
     local suggestWordsFn=$1
     local commandCompletedFn=$2
     local tabPressedTwiceOnCompletionFn=$3
@@ -246,7 +241,7 @@ fi
 keywordsToTriggerCompletion=$(cat $BISHOP_COMMANDS_FILE | jq -r "keys | .[]")
 for keyword in ${keywordsToTriggerCompletion[@]};
 do
-    alias "$keyword"="bishop"
+    alias "$keyword"="BISHOP_ALIAS=$keyword;_bishop"
     complete -F _complete "$keyword"
 done
 

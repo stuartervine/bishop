@@ -25,12 +25,15 @@ COMP_CWORD=1
 
 # end to end
 @test "bishop executes command" {
-    output=$(bishop files ls)
+    BISHOP_ALIAS="bishop"
+    output=$(_bishop files ls)
+    echo $output
     echo $output | grep "bishop.sh" #returns a line
 }
 
 @test "executes command passing through any additional parameters" {
-    output=$(bishop files ls *.sh)
+    BISHOP_ALIAS="bishop"
+    output=$(_bishop files ls *.sh)
     echo $output | grep "bishop.sh"
 }
 
