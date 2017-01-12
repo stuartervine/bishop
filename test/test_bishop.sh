@@ -44,6 +44,14 @@ COMP_CWORD=1
   [ "$actualCurrentCommand" == "files" ]
 }
 
+@test "creates a command from the chain tags under each json node, or ignores if there is none" {
+  COMP_WORDS=("bishop" "chained" "command" "test" "")
+  COMP_CWORD=1
+  _processCompletion noOp stubCommandCompletion noOp
+  echo "'$actualCurrentCommand'"
+  [ "$actualCurrentCommand" == "echo chained > command.txt" ]
+}
+
 @test "resolves to static command when on leaf of json tree" {
   COMP_WORDS=("bishop" "files" "listDetails" "")
   COMP_CWORD=1

@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 red='\033[0;31m'
 green='\033[0;32m'
 blue='\033[0;34m'
@@ -63,6 +64,14 @@ function bishop() {
     fi
 }
 
+function ignoreNull() {
+    if [ "$1" == "null" ]; then
+        echo ""
+    else
+        echo $1
+    fi
+}
+
 function _filterArray() {
     local filterValue=$1
     local arr=${@:2}
@@ -96,6 +105,31 @@ function _resolveCommand() {
     local command="${command%\"}"
     local command="${command#\"}"
     echo $command
+}
+
+function _cleanUpCommand() {
+    local command="${1%\"}"
+    local command="${command#\"}"
+    echo $command
+}
+
+function _resolveCommandUsingArray() {
+    local jqFilters=${@:1}
+    local chainedCommand=""
+    local json=$(cat $BISHOP_COMMANDS_FILE)
+    for jqFilter in ${jqFilters[@]};
+    do
+        json=$(echo $json | jq $jqFilter)
+        local jsonObjectType=$(echo $json | jq "type")
+        if [ $jsonObjectType == "\"string\"" ]; then
+            local commandToAppend=$(_cleanUpCommand "$(ignoreNull "$json")")
+            chainedCommand="$chainedCommand $commandToAppend"
+        else
+            local commandToChain=$(_cleanUpCommand $(ignoreNull $(echo $json | jq "._chainedCommand")))
+            chainedCommand="$chainedCommand $commandToChain"
+        fi
+    done
+    echo $chainedCommand
 }
 
 function _parseJsonCommands() {
@@ -136,6 +170,14 @@ function _jsonSelector() {
     echo $selector
 }
 
+function _jsonSelectorAsArray() {
+    local selector=(".[]")
+    local completedWords=("${COMP_WORDS[@]:1}")
+    unset completedWords[${#completedWords[@]}-1]
+    echo ".[]"
+    for word in ${completedWords[@]}; do echo ".\"$word\""; done
+}
+
 function _matchingCommandJson() {
     local selector=$1
     echo $(cat $BISHOP_COMMANDS_FILE | jq $selector)
@@ -173,6 +215,7 @@ function _processCompletion() {
 
     local currentWord="${COMP_WORDS[COMP_CWORD]}"
     local selector=$(_jsonSelector)
+    local selectorArray=$(_jsonSelectorAsArray)
     local commandJson=$(_matchingCommandJson $selector)
     local jsonObjectType=$(echo $commandJson | jq "type")
     if [ $jsonObjectType != "\"string\"" ]; then
@@ -180,10 +223,10 @@ function _processCompletion() {
         local commands=$(_parseJsonCommands "$commandJson")
         $suggestWordsFn "${commands[@]}" $currentWord
     else
-        local currentCommand=$(_resolveCommand $selector)
+        local currentCommand=$(_resolveCommandUsingArray $selectorArray)
         local commandWithVariables=$(eval "echo \"$currentCommand\"")
         $commandCompletedFn "$commandWithVariables"
-        if [ $CURRENT_TAB_COUNT -eq 2 ]; then
+        if [[ $CURRENT_TAB_COUNT -eq 2 ]]; then
             $tabPressedTwiceOnCompletionFn "$commandWithVariables"
             return 0
         fi
