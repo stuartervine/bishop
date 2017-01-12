@@ -93,18 +93,20 @@ COMP_CWORD=1
 }
 
 # unit
-@test "_jsonSelector builds jq json selector given current word list" {
+@test "_jsonSelectorAsArray builds jq json selectors given current word list" {
   COMP_WORDS=("bishop" "files" "")
   COMP_CWORD=1
-  selector=$(_jsonSelector)
-  [ "$selector" == ".[].\"files\"" ]
+  selector=($(_jsonSelectorAsArray))
+  expectedArray=(".[]" ".\"files\"")
+  [ $("${selector[@]}") == $("${expectedArray[@]}") ]
 }
 
-@test "_jsonSelector copes with dashes" {
+@test "_jsonSelectorAsArray copes with dashes" {
   COMP_WORDS=("bishop" "minus-test" "")
   COMP_CWORD=1
-  selector=$(_jsonSelector)
-  [ "$selector" == ".[].\"minus-test\"" ]
+  selector=($(_jsonSelectorAsArray))
+  expectedArray=(".[]" ".\"minus-test\"")
+  [ $("${selector[@]}") == $("${expectedArray[@]}") ]
 }
 
 @test "_resolveCommand retrieves json object at selector position in commands file" {

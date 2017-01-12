@@ -179,9 +179,12 @@ function _jsonSelectorAsArray() {
 }
 
 function _matchingCommandJson() {
-    local selector=$1
+    local selectorArray=$@
+    local selector=$(_arrayJoin "" $selectorArray)
     echo $(cat $BISHOP_COMMANDS_FILE | jq $selector)
 }
+
+function _arrayJoin { local IFS="$1"; shift; echo "$*"; }
 
 function _wordsSuggested() {
     local commands=$1
@@ -214,9 +217,8 @@ function _processCompletion() {
     local tabPressedTwiceOnCompletionFn=$3
 
     local currentWord="${COMP_WORDS[COMP_CWORD]}"
-    local selector=$(_jsonSelector)
     local selectorArray=$(_jsonSelectorAsArray)
-    local commandJson=$(_matchingCommandJson $selector)
+    local commandJson=$(_matchingCommandJson $selectorArray)
     local jsonObjectType=$(echo $commandJson | jq "type")
     if [ $jsonObjectType != "\"string\"" ]; then
         CURRENT_TAB_COUNT=0
