@@ -45,11 +45,11 @@ function bishop() {
         cd $currentDir
     else
         local currentDir=$(pwd)
-        local selector=".[]"
+        local selector="."
         local parameters=""
         for word in $@;
         do
-            local commandJson=$(cat $BISHOP_COMMANDS_FILE | jq $selector);
+            local commandJson=$(cat $BISHOP_COMMANDS_FILE | jq "$selector");
             local jsonObjectType=$(echo $commandJson | jq "type")
             if [ $jsonObjectType != "\"string\"" ]; then
                 selector="$selector.$word";
@@ -145,8 +145,8 @@ function _parseJsonVariables() {
 }
 
 function _walkJsonAndCreateVariables() {
-    local selector=".[]"
-    local completedWords=("${COMP_WORDS[@]:1}")
+    local selector=""
+    local completedWords=("${COMP_WORDS[@]}")
     unset completedWords[${#completedWords[@]}-1]
     for word in ${completedWords[@]};
     do
@@ -162,26 +162,16 @@ function _walkJsonAndCreateVariables() {
     done
 }
 
-function _jsonSelector() {
-    local selector=".[]"
-    local completedWords=("${COMP_WORDS[@]:1}")
-    unset completedWords[${#completedWords[@]}-1]
-    for word in ${completedWords[@]}; do selector="$selector.\"$word\""; done
-    echo $selector
-}
-
 function _jsonSelectorAsArray() {
-    local selector=(".[]")
-    local completedWords=("${COMP_WORDS[@]:1}")
+    local completedWords=("${COMP_WORDS[@]}")
     unset completedWords[${#completedWords[@]}-1]
-    echo ".[]"
-    for word in ${completedWords[@]}; do echo ".\"$word\""; done
+    for word in ${completedWords[@]}; do echo ".$word"; done
 }
 
 function _matchingCommandJson() {
     local selectorArray=$@
     local selector=$(_arrayJoin "" $selectorArray)
-    echo $(cat $BISHOP_COMMANDS_FILE | jq $selector)
+    echo $(cat $BISHOP_COMMANDS_FILE | jq "$selector")
 }
 
 function _arrayJoin { local IFS="$1"; shift; echo "$*"; }
@@ -253,6 +243,11 @@ if ! [ $(command -v jq) ]; then
     return
 fi
 
-complete -F _complete "bishop"
+keywordsToTriggerCompletion=$(cat $BISHOP_COMMANDS_FILE | jq -r "keys | .[]")
+for keyword in ${keywordsToTriggerCompletion[@]};
+do
+    alias "$keyword"="bishop"
+    complete -F _complete "$keyword"
+done
 
 BISHOP_INSTALLED_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

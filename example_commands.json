@@ -4,5 +4,8 @@
       "ls": "ls",
       "listDetails": "ls -al"
     }
+  },
+  "foo": {
+    "bar": "echo 'bar'"
   }
 }

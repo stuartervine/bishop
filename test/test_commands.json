@@ -23,5 +23,8 @@
         "test": "chained > command.txt"
       }
     }
+  },
+  "foo": {
+    "bar": "echo 'bar'"
   }
 }

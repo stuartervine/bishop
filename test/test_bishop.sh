@@ -110,23 +110,23 @@ COMP_CWORD=1
 }
 
 @test "_resolveCommand retrieves json object at selector position in commands file" {
-   command=$(_resolveCommand ".[].files")
+   command=$(_resolveCommand ".bishop.files")
    echo $command
    [ "$command" == "{ \"ls\": \"ls\", \"listDetails\": \"ls -al\" }" ]
 }
 
 @test "_resolveCommand retrieves string when selector represents a leaf in the commands json" {
-   command=$(_resolveCommand ".[].files.listDetails")
+   command=$(_resolveCommand ".bishop.files.listDetails")
    [ "$command" == "ls -al" ]
 }
 
 @test "_resolveCommand returns null when no match to given selector" {
-   command=$(_resolveCommand ".[].files.bobbins")
+   command=$(_resolveCommand ".bishop.files.bobbins")
    [ "$command" == null ]
 }
 
 @test "_resolveCommand deals with dashes in command label" {
-   command=$(_resolveCommand ".[].\"minus-test\"")
+   command=$(_resolveCommand ".bishop.\"minus-test\"")
    [ "$command" == "ls -al" ]
 }
 
