@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dc7390fe-ff06-472d-b28a-2bf63bf19678" name="Default" comment="Removing _jsonSelector and replacing with _jsonSelectorAsArray.">
+    <list default="true" id="dc7390fe-ff06-472d-b28a-2bf63bf19678" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bishop.sh" afterPath="$PROJECT_DIR$/bishop.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example_commands.json" afterPath="$PROJECT_DIR$/example_commands.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/test_bishop.sh" afterPath="$PROJECT_DIR$/test/test_bishop.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/test_commands.json" afterPath="$PROJECT_DIR$/test/test_commands.json" />
     </list>
     <ignored path="bishop.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,11 +33,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="example_commands.json" pinned="false" current-in-tab="true">
+      <file leaf-file-name="example_commands.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example_commands.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="120">
               <caret line="8" column="31" lean-forward="false" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -760,7 +765,7 @@
       <workItem from="1484131180930" duration="1147000" />
       <workItem from="1484140977909" duration="3524000" />
       <workItem from="1484156326227" duration="4582000" />
-      <workItem from="1484240888077" duration="10562000" />
+      <workItem from="1484240888077" duration="10619000" />
     </task>
     <task id="LOCAL-00001" summary="Updating read me with some examples.">
       <created>1475063648966</created>
@@ -790,11 +795,18 @@
       <option name="project" value="LOCAL" />
       <updated>1484254733366</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Making clean up command parse all parts of the command to stop stripping off stuff after some whitespace.">
+      <created>1484295542989</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1484295542989</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25860000" />
+    <option name="totallyTimeSpent" value="25917000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="807" extended-state="6" />
@@ -875,7 +887,8 @@
     <MESSAGE value="Adding chained commands." />
     <MESSAGE value="Removing _jsonSelector and replacing with _jsonSelectorAsArray." />
     <MESSAGE value="Fixing tests." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing tests." />
+    <MESSAGE value="Making clean up command parse all parts of the command to stop stripping off stuff after some whitespace." />
+    <option name="LAST_COMMIT_MESSAGE" value="Making clean up command parse all parts of the command to stop stripping off stuff after some whitespace." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1152,6 +1165,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="8" column="31" lean-forward="false" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding />
         </state>
       </provider>
