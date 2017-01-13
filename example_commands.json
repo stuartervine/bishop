@@ -1,9 +1,7 @@
 {
   "bishop": {
-    "files": {
-      "ls": "ls",
-      "listDetails": "ls -al"
-    }
+    "ls": "ls",
+    "listDetails": "ls -al"
   },
   "foo": {
     "_chainedCommand": "echo -n",
