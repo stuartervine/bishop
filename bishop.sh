@@ -64,7 +64,7 @@ function ignoreNull() {
     if [ "$1" == "null" ]; then
         echo ""
     else
-        echo $1
+        echo $@
     fi
 }
 
@@ -104,7 +104,7 @@ function _resolveCommand() {
 }
 
 function _cleanUpCommand() {
-    local command="${1%\"}"
+    local command="${@%\"}"
     local command="${command#\"}"
     echo $command
 }
@@ -151,8 +151,10 @@ function _walkJsonAndCreateVariables() {
         for variable in ${variables[@]};
         do
             variableKey="${variable#"_"}"
-            variableValue=$(_resolveCommand "$selector.$variable")
-            eval "export $variableKey=$variableValue"
+            if [ ! $variableKey == "chainedCommand" ]; then
+                variableValue=$(_resolveCommand "$selector.$variable")
+                eval "export $variableKey=$variableValue"
+            fi
         done
         selector="$selector.$word"
     done

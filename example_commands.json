@@ -6,7 +6,7 @@
     }
   },
   "foo": {
-    "_chainedCommand": "echo",
+    "_chainedCommand": "echo -n",
     "bar": "'bar'"
   }
 }

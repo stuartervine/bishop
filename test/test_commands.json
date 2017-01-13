@@ -18,9 +18,9 @@
     },
     "minus-test": "ls -al",
     "chained": {
-      "_chainedCommand": "echo ",
+      "_chainedCommand": "echo -n",
       "command": {
-        "test": "chained > command.txt"
+        "test": "chained > /dev/null"
       }
     }
   },

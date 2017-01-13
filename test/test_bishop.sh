@@ -51,8 +51,8 @@ COMP_CWORD=1
   COMP_WORDS=("bishop" "chained" "command" "test" "")
   COMP_CWORD=1
   _processCompletion noOp stubCommandCompletion noOp
-  echo "'$actualCurrentCommand'"
-  [ "$actualCurrentCommand" == "echo chained > command.txt" ]
+  echo "$actualCurrentCommand"
+  [ "$actualCurrentCommand" == "echo -n chained > /dev/null" ]
 }
 
 @test "resolves to static command when on leaf of json tree" {

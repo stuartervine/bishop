@@ -96,3 +96,32 @@ gives
 ~~~
 bishop prod login <-- ssh user@prod.server.com
 ~~~
+
+**Command chaining:**
+
+You can build a command up using the levels of the json tree by using chained commands:
+
+~~~
+echo '
+{
+  "bishop": {
+    "_chainedCommand":"ssh -i my.pem",
+    "prod": {
+        "login": "user@awesomestuff.com",
+    },
+    "test": {
+        "login": "testuser@test.awesomestuff.com"
+    }
+  }
+}
+' > command.json
+BISHOP_COMMANDS_FILE=./command.json
+bishop prod login<TAB>
+~~~
+
+gives
+
+~~~
+bishop prod login <-- ssh -i my.pem user@awesomestuff.com
+bishop test login <-- ssh -i my.pem testuser@test.awesomestuff.com
+~~~
